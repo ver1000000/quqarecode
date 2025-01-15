@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  clickhouse:
+    image: yandex/clickhouse-server:latest
+    container_name: b1_clickhouse
+    ports:
+      - "8123:8123"
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+
+  api:
+    build: ./apps/api
+    container_name: b1_api
+    ports:
+      - "5000:5000"
+    depends_on:
+      - clickhouse
+
+  ui:
+    build: ./apps/ui
+    container_name: b1_ui
+    ports:
+      - "8080:8080"
+    depends_on:
+      - api
+
+volumes:
+  clickhouse_data:
