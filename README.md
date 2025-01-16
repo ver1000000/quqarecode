@@ -1,3 +1,5 @@
+![CleanShot 2025-01-16 at 22 35 12@2x](https://github.com/user-attachments/assets/6ec55d78-01ea-464e-af76-0b08dbe7afc0)
+
 # Quqarecode 🐔
 
 ## Overview
