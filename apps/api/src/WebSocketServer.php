@@ -11,7 +11,7 @@ class WebSocketServer
     protected $db;
 
     public function __construct() {
-        $this->server = new Server("0.0.0.0", 8000);
+        $this->server = new Server("0.0.0.0", getenv('WEBSOCKET_PORT', 8000));
         $this->server->on('open', [$this, 'onOpen']);
         $this->server->on('message', [$this, 'onMessage']);
         $this->server->on('close', [$this, 'onClose']);
@@ -24,7 +24,9 @@ class WebSocketServer
         ];
         $this->db = new Client($config);
         $this->db->database(getenv('CLICKHOUSE_DB'));
+    }
 
+    public function start() {
         $this->server->start();
     }
 

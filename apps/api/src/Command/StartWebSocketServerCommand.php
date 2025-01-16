@@ -16,15 +16,18 @@ class StartWebSocketServerCommand extends Command
 {
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $output->writeln('Starting Swoole WebSocket server...');
+        try {
+            $output->writeln('Starting Swoole WebSocket server...');
 
-        // Instantiate the WebSocketServer which uses Swoole
-        $webSocketServer = new WebSocketServer();
+            // Instantiate the WebSocketServer which uses Swoole
+            $webSocketServer = new WebSocketServer();
+            $webSocketServer->start();
 
-        // The server is started in the constructor of WebSocketServer
-        // No need to call run() or start() here
-
-        $output->writeln('Swoole WebSocket server is running.');
+            $output->writeln('Swoole WebSocket server is running.');
+        } catch (\Exception $e) {
+            $output->writeln('Error starting WebSocket server: ' . $e->getMessage());
+            return Command::FAILURE;
+        }
 
         return Command::SUCCESS;
     }

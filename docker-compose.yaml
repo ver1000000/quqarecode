@@ -30,6 +30,7 @@ services:
       - APP_DEBUG=1
       - COMPOSER_ALLOW_SUPERUSER=1
       - PHP_IDE_CONFIG=serverName=symfony
+      - WEBSOCKET_PORT=8000
       - CLICKHOUSE_HOST=clickhouse
       - CLICKHOUSE_PORT=8123
       - CLICKHOUSE_DB=analytics
