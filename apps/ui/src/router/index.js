@@ -19,9 +19,26 @@ const routes = [
   }
 ];
 
-const router = createRouter({
+// Create router factory function
+export function createAppRouter(eventTracker) {
+  const router = createRouter({
     history: createWebHistory(),
-  routes,
-});
+    routes,
+  });
 
-export default router; 
+  router.beforeEach((to, from) => {
+    Promise.resolve().then(() => {
+      eventTracker?.sendEvent('page_view', {
+        from: from.fullPath,
+        to: to.fullPath,
+        name: to.name
+      });
+    });
+
+    return true;
+  });
+
+  return router;
+}
+
+export default createAppRouter; 
