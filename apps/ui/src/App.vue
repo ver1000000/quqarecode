@@ -1,10 +1,5 @@
 <template>
   <v-app>
-    <!-- <v-app-bar app>
-      <v-toolbar-title>🐓 Кукарекод генератор</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn to="/about" text>О проекте</v-btn>
-    </v-app-bar> -->
     <v-main class="d-flex align-center justify-center">
       <router-view></router-view>
     </v-main>

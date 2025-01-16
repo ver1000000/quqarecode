@@ -1,29 +1,47 @@
-# b1_ui
+# Quqarecode 🐔
 
-This template should help get you started developing with Vue 3 in Vite.
+## Overview
+This project is a web application that tracks form submissions and all events from `vue-router`. It provides insights into user interactions and navigation patterns within the app.
 
-## Recommended IDE Setup
+## Prerequisites
+- Docker installed on your machine.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## What's inside?
+- Clickhouse database. It's good for storing events.
+- Symfony 7 websocket server.
+- Vue.js frontend built with Vuetify.
 
-## Customize configuration
+## Running the Application
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+1. **Build the Docker Image:**
+   ```bash
+   docker-compose build
+   ```
 
-## Project Setup
+2. **Run the Docker Container:**
+   ```bash
+   docker-compose up -d
+   ```
 
-```sh
-npm install
-```
+## Checking Functionality
 
-### Compile and Hot-Reload for Development
+1. **Access the Application:**
+   Open your web browser and navigate to `http://localhost:8081`.
 
-```sh
-npm run dev
-```
+2. **Verify Event Tracking:**
+   - **Form Submission:** Fill out and submit any form within the application. Check the console or network tab in your browser's developer tools to see the tracking data being sent via websocket.
+   - **Vue-Router Events:** Navigate through different routes in the application. Again, use the developer tools to verify that route change events are being tracked.
 
-### Compile and Minify for Production
+## Event Tracking System
+The application uses a custom event tracking system to log:
+- Form submissions
+- Route changes via `vue-router`
 
-```sh
-npm run build
-```
+These events are logged to the console and can be configured to send data to a backend service for further analysis.
+
+## Troubleshooting
+- Ensure Docker is running and properly configured.
+- Check the Docker logs for any errors:
+  ```bash
+  docker logs <container_id>
+  ```
