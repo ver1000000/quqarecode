@@ -1,29 +1,40 @@
 version: '3.8'
 
 services:
-  clickhouse:
-    image: yandex/clickhouse-server:latest
-    container_name: b1_clickhouse
-    ports:
-      - "8123:8123"
-    volumes:
-      - clickhouse_data:/var/lib/clickhouse
-
   api:
-    build: ./apps/api
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
     container_name: b1_api
     ports:
-      - "5000:5000"
-    depends_on:
-      - clickhouse
+      - "5050:8000"
+      - "5051:8080"
+    volumes:
+      - ./apps/api:/var/www/html
+      - ./apps/api/docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - api_vendor:/var/www/html/vendor
+    environment:
+      - APP_ENV=dev
+      - APP_DEBUG=1
+      - COMPOSER_ALLOW_SUPERUSER=1
+      - PHP_IDE_CONFIG=serverName=symfony
 
   ui:
-    build: ./apps/ui
+    build:
+      context: ./apps/ui
+      dockerfile: Dockerfile
     container_name: b1_ui
     ports:
-      - "8080:8080"
+      - "8081:5173"
+    volumes:
+      - ./apps/ui:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:5050
+      - VITE_WS_URL=ws://localhost:5051
     depends_on:
       - api
 
 volumes:
-  clickhouse_data:
+  api_vendor:

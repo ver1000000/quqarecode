@@ -3,29 +3,36 @@
 namespace App\Command;
 
 use App\WebSocketServer;
+use Ratchet\Http\HttpServer;
 use Ratchet\Server\IoServer;
+use Ratchet\WebSocket\WsServer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 
+#[AsCommand(
+    name: 'app:start-websocket-server',
+    description: 'Starts the WebSocket server'
+)]
 class StartWebSocketServerCommand extends Command
 {
-    protected static $defaultName = 'app:start-websocket-server';
-
-    protected function configure()
-    {
-        $this->setDescription('Starts the WebSocket server.');
-    }
-
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('Starting WebSocket server...');
 
         $server = IoServer::factory(
-            new WebSocketServer(),
-            8080
+            new HttpServer(
+                new WsServer(
+                    new WebSocketServer()
+                )
+            ),
+            8080,
+            '0.0.0.0'
         );
 
+        $output->writeln('WebSocket server listening on 0.0.0.0:8080');
+        
         $server->run();
 
         return Command::SUCCESS;

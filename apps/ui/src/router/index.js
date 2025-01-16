@@ -13,10 +13,14 @@ const routes = [
     name: 'About',
     component: About,
   },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/'
+  }
 ];
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+    history: createWebHistory(),
   routes,
 });
 
