@@ -1,0 +1,10 @@
+clickhouse_migrations:
+  connection: # connection configuration (required)
+    host: '%env(CLICKHOUSE_HOST)%'
+    port: 8123
+    username: '%env(CLICKHOUSE_USER)%'
+    password: '%env(CLICKHOUSE_PASSWORD)%'
+    database: '%env(CLICKHOUSE_DB)%'
+  clickhouse_migrations_version_table: 'ch_migrations' # version table name (optional)
+  clickhouse_migrations_path: '%kernel.project_dir%/migrations/clickhouse' # migration path (optional)
+  clickhouse_migrations_namespace: 'App\Migrations\Clickhouse' # migration class namespace (optional)

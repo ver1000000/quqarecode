@@ -22,3 +22,7 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    ClickHouseDB\Client:
+        arguments:
+            - { host: '%env(CLICKHOUSE_HOST)%', port: '%env(CLICKHOUSE_PORT)%', username: '%env(CLICKHOUSE_USER)%', password: '%env(CLICKHOUSE_PASSWORD)%', database: '%env(CLICKHOUSE_DB)%' }

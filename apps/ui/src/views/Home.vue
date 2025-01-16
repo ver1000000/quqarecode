@@ -79,7 +79,7 @@ export default {
       }
 
       const event = {
-        id: Date.now(),
+        timestamp: Date.now(),
         name: 'form_submission',
         props: JSON.stringify({ name: name.value }),
       };

@@ -11,6 +11,7 @@ RUN apk add --no-cache \
     git \
     gnu-libiconv \
     linux-headers \
+    brotli-dev \
     $PHPIZE_DEPS
 
 # Install PHP extensions
@@ -19,6 +20,9 @@ RUN set -eux; \
         pdo_mysql \
         opcache \
     ;
+
+# Install Swoole
+RUN pecl install swoole && docker-php-ext-enable swoole
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer

@@ -3,9 +3,6 @@
 namespace App\Command;
 
 use App\WebSocketServer;
-use Ratchet\Http\HttpServer;
-use Ratchet\Server\IoServer;
-use Ratchet\WebSocket\WsServer;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -19,21 +16,15 @@ class StartWebSocketServerCommand extends Command
 {
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $output->writeln('Starting WebSocket server...');
+        $output->writeln('Starting Swoole WebSocket server...');
 
-        $server = IoServer::factory(
-            new HttpServer(
-                new WsServer(
-                    new WebSocketServer()
-                )
-            ),
-            8080,
-            '0.0.0.0'
-        );
+        // Instantiate the WebSocketServer which uses Swoole
+        $webSocketServer = new WebSocketServer();
 
-        $output->writeln('WebSocket server listening on 0.0.0.0:8080');
-        
-        $server->run();
+        // The server is started in the constructor of WebSocketServer
+        // No need to call run() or start() here
+
+        $output->writeln('Swoole WebSocket server is running.');
 
         return Command::SUCCESS;
     }

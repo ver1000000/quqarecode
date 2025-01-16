@@ -1,22 +1,43 @@
 version: '3.8'
 
 services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:23.8
+    container_name: b1_clickhouse
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    environment:
+      - CLICKHOUSE_DB=analytics
+      - CLICKHOUSE_USER=admin
+      - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
+      - CLICKHOUSE_PASSWORD=adsuc6sfvfef9v8
+
   api:
     build:
       context: ./apps/api
       dockerfile: Dockerfile
     container_name: b1_api
-    ports:
+    ports: 
       - "5050:8000"
     volumes:
       - ./apps/api:/var/www/html
-      - ./apps/api/docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      # - ./apps/api/docker/Caddyfile:/etc/caddy/Caddyfile:ro
       - api_vendor:/var/www/html/vendor
     environment:
       - APP_ENV=dev
       - APP_DEBUG=1
       - COMPOSER_ALLOW_SUPERUSER=1
       - PHP_IDE_CONFIG=serverName=symfony
+      - CLICKHOUSE_HOST=clickhouse
+      - CLICKHOUSE_PORT=8123
+      - CLICKHOUSE_DB=analytics
+      - CLICKHOUSE_USER=admin
+      - CLICKHOUSE_PASSWORD=adsuc6sfvfef9v8
+    depends_on:
+      - clickhouse
 
   ui:
     build:
@@ -31,9 +52,10 @@ services:
     environment:
       - NODE_ENV=development
       - VITE_API_URL=http://localhost:5050
-      - VITE_WS_URL=ws://localhost:5050
+      - VITE_WS_URL=ws://localhost:5050/ws
     depends_on:
       - api
 
 volumes:
   api_vendor:
+  clickhouse_data:
