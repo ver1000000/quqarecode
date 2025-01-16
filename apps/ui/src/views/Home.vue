@@ -1,118 +1,51 @@
 <template>
-  <v-app>
-    <v-app-bar app>
-      <v-toolbar-title>My App</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn to="/about" text>About</v-btn>
-    </v-app-bar>
-
-    <v-main>
-      <v-container>
-        <v-alert
-          v-if="connectionError"
-          type="error"
-          dismissible
-          @click="initWebSocket"
-        >
-          {{ connectionError }}
-          Click to reconnect
-        </v-alert>
-
-        <v-form @submit.prevent="submitForm">
-          <v-text-field label="Name" v-model="name"></v-text-field>
-          <v-btn 
-            type="submit" 
-            color="primary"
-            :disabled="!isConnected"
-          >
-            Submit
-          </v-btn>
-        </v-form>
-      </v-container>
-    </v-main>
-  </v-app>
+  <v-row class="fill-height" align="center" justify="center">
+    <v-col cols="10" sm="8" md="6" lg="4" align-self="center">
+      <h1 class="text-h3 mb-10 text-center">Кукарекод генератор</h1>
+      <v-img align="center" class="ml-auto mr-auto mb-10" :src="qrCodeDataUrl || '/hero.png'" alt="QR Code"
+        max-width="200">
+      </v-img>
+      <v-form @submit.prevent="generateQRCode" v-model="isFormValid">
+        <v-text-field label="Ссылка" v-model="url" :rules="urlRules" variant="solo"
+          hint="Введите валидный URL (например, https://example.com)" persistent-hint>
+        </v-text-field>
+        <v-btn class="mt-2" block type="submit" color="secondary" size="large">
+          Сгенерировать кукарекод
+        </v-btn>
+      </v-form>
+    </v-col>
+  </v-row>
 </template>
 
-<script>
-import { ref, onMounted, onUnmounted } from 'vue';
+<script setup>
+import { ref, inject } from 'vue'
+import QRCode from 'qrcode'
+const eventTracker = inject('$eventTracker')
 
-export default {
-  setup() {
-    const name = ref('');
-    const socket = ref(null);
-    const isConnected = ref(false);
-    const connectionError = ref('');
-    let reconnectTimeout = null;
+const url = ref('')
+const qrCodeDataUrl = ref('')
+const isFormValid = ref(false)
 
-    const initWebSocket = () => {
-      if (socket.value && socket.value.readyState <= 1) {
-        socket.value.close();
+const urlRules = [
+  v => !!v || 'URL обязателен',
+  v => {
+    try {
+      new URL(v)
+      return true
+    } catch (e) {
+      return 'Введите валидный URL'
+    }
+  }
+]
+
+const generateQRCode = async () => {
+    try {
+      if (isFormValid.value) {
+        qrCodeDataUrl.value = await QRCode.toDataURL(url.value)
+        eventTracker.sendEvent('qr_code_generated', { url: url.value })
       }
-
-      connectionError.value = '';
-      socket.value = new WebSocket(import.meta.env.VITE_WS_URL);
-
-      socket.value.onopen = () => {
-        console.log('WebSocket connection established');
-        isConnected.value = true;
-        connectionError.value = '';
-      };
-
-      socket.value.onclose = () => {
-        console.log('WebSocket connection closed');
-        isConnected.value = false;
-        // Try to reconnect after 5 seconds
-        reconnectTimeout = setTimeout(initWebSocket, 5000);
-      };
-
-      socket.value.onerror = (error) => {
-        console.error('WebSocket error:', error);
-        connectionError.value = 'Failed to connect to server. Click to try again.';
-        isConnected.value = false;
-      };
-    };
-
-    const submitForm = () => {
-      if (!socket.value || socket.value.readyState !== WebSocket.OPEN) {
-        connectionError.value = 'Not connected to server. Please wait...';
-        return;
-      }
-
-      const event = {
-        timestamp: Date.now(),
-        name: 'form_submission',
-        props: JSON.stringify({ name: name.value }),
-      };
-
-      try {
-        socket.value.send(JSON.stringify(event));
-        name.value = ''; // Clear the form after successful submission
-      } catch (error) {
-        console.error('Failed to send message:', error);
-        connectionError.value = 'Failed to send message. Please try again.';
-      }
-    };
-
-    onMounted(() => {
-      initWebSocket();
-    });
-
-    onUnmounted(() => {
-      if (socket.value) {
-        socket.value.close();
-      }
-      if (reconnectTimeout) {
-        clearTimeout(reconnectTimeout);
-      }
-    });
-
-    return {
-      name,
-      isConnected,
-      connectionError,
-      submitForm,
-      initWebSocket,
-    };
-  },
-};
-</script> 
+    } catch (error) {
+        console.error('Error generating QR code:', error)
+    }
+}
+</script>
