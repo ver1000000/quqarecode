@@ -24,7 +24,6 @@ services:
       - "5050:8000"
     volumes:
       - ./apps/api:/var/www/html
-      # - ./apps/api/docker/Caddyfile:/etc/caddy/Caddyfile:ro
       - api_vendor:/var/www/html/vendor
     environment:
       - APP_ENV=dev

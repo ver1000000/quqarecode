@@ -42,8 +42,10 @@ class WebSocketServer
 
             $this->db->insert('events', [
                 [
+                    'id' => $data['id'],
                     'name' => $data['name'],
-                    'props' => json_encode($data['props'])
+                    'props' => json_encode($data['props']),
+                    'timestamp' => null // Use default timestamp
                 ]
             ]);
 
